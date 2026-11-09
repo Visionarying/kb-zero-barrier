@@ -75,3 +75,7 @@
 - [WeKnora](https://github.com/Tencent/WeKnora)
 - [MaxKB](https://github.com/1Panel-dev/MaxKB)
 - [NoteGen](https://github.com/codexu/note-gen)
+
+## 许可
+
+MIT License。可以自由使用、修改、再发布，保留版权声明即可。
