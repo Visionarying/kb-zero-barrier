@@ -2,6 +2,9 @@
 
 给「从没用过知识库」的上班族的一份入门指南，以及一个可以动手的离线练习场。
 
+**在线看**：<https://visionarying.github.io/kb-zero-barrier/>  
+**仓库**：<https://github.com/Visionarying/kb-zero-barrier>
+
 - 不移动、不重命名你的任何文件
 - 不要求安装软件、不需要 API Key
 - 例子全是上班场景：报销、报价、周会、年假、会议室
@@ -57,7 +60,7 @@
 
 **本地**：下载后双击 HTML，不需要联网、不需要安装。
 
-**在线**：如果启用了 GitHub Pages，访问 `https://<用户名>.github.io/<仓库名>/`。
+**在线**：<https://visionarying.github.io/kb-zero-barrier/>
 
 ## 它不是什么
 
