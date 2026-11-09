@@ -1,0 +1,1831 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>把资料丢进去，然后像问同事一样问它 · 知识库零门槛指南</title>
+<meta name="description" content="给第一次用知识库的上班族：10 分钟用自己的资料问出第一个答案。讲清知识库是什么、接进来有什么好处、怎么接、怎么和模型配合、怎么灵活查，以及怎么判断答案该不该信。">
+<style>
+  :root{
+    --bg:#f4f4f1;
+    --paper:#ffffff;
+    --ink:#1b2422;
+    --muted:#66716d;
+    --line:#e3e5e0;
+    --line-soft:#eef0ec;
+    --teal:#0f5f57;
+    --teal-deep:#0a4741;
+    --teal-soft:#e6f2ef;
+    --amber:#a8620c;
+    --amber-soft:#fdf4e6;
+    --red:#a63535;
+    --red-soft:#fbeeed;
+    --blue:#2f5d8a;
+    --blue-soft:#eaf1f8;
+    --shadow:0 1px 2px rgba(27,36,34,.04),0 10px 30px rgba(27,36,34,.05);
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
+    font-size:16.5px;line-height:1.8;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 20px 72px}
+  p{margin:0 0 14px}
+  code{
+    font-family:ui-monospace,SFMono-Regular,Consolas,"Cascadia Code",monospace;
+    font-size:.92em;background:var(--line-soft);padding:1px 5px;border-radius:4px;
+  }
+
+  /* ---------- 顶部导航 ---------- */
+  .site-nav{
+    position:sticky;top:0;z-index:50;
+    background:rgba(244,244,241,.92);
+    backdrop-filter:saturate(160%) blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  .site-nav .inner{
+    max-width:1040px;margin:0 auto;padding:10px 20px;
+    display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;
+  }
+  .site-nav .inner::-webkit-scrollbar{display:none}
+  .site-nav a{
+    flex:none;font-size:14px;color:var(--muted);text-decoration:none;
+    padding:6px 11px;border-radius:7px;white-space:nowrap;
+  }
+  .site-nav a:hover{background:var(--teal-soft);color:var(--teal)}
+  .site-nav a.active{background:var(--teal);color:#fff;font-weight:700}
+  .site-nav .nav-label{
+    flex:none;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:var(--muted);
+    padding:7px 10px 7px 0;margin-right:2px;border-right:1px solid var(--line);
+  }
+
+  /* ---------- 首屏 ---------- */
+  .hero{padding:56px 0 8px}
+  .kicker{
+    font-size:13px;font-weight:700;letter-spacing:.16em;color:var(--teal);
+    margin:0 0 14px;text-transform:uppercase;
+  }
+  h1{
+    font-size:clamp(30px,4.4vw,44px);line-height:1.28;letter-spacing:-.02em;
+    margin:0 0 18px;font-weight:800;max-width:840px;
+  }
+  .lede{font-size:18.5px;color:#48534f;max-width:760px;margin-bottom:22px}
+  .promise{
+    background:var(--teal-soft);border-left:4px solid var(--teal);
+    border-radius:0 10px 10px 0;padding:14px 18px;font-size:15.5px;
+    margin:0 0 24px;max-width:800px;
+  }
+  .scope-note{
+    font-size:14.5px;color:#4d5854;border:1px dashed #cfd8d4;border-radius:9px;
+    padding:11px 15px;margin:0 0 22px;max-width:800px;background:#fcfdfc;
+  }
+  .scope-note b{color:#2c3835}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+  .pill{
+    font-size:12.5px;color:var(--muted);border:1px solid var(--line);
+    background:var(--paper);border-radius:999px;padding:4px 11px;
+  }
+  .jump{display:flex;flex-wrap:wrap;gap:10px}
+
+  /* ---------- 开始路径 ---------- */
+  .start-path{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:0 0 10px;max-width:940px}
+  .sp{
+    display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;
+    padding:14px 16px;background:var(--paper);text-decoration:none;color:var(--ink);
+    transition:transform .12s ease,border-color .12s ease,box-shadow .12s ease;
+  }
+  .sp:hover{border-color:var(--teal);transform:translateY(-1px);box-shadow:var(--shadow)}
+  .sp.primary{background:var(--teal);border-color:var(--teal);color:#fff}
+  .sp.primary .sp-body em{color:#d5ebe7}
+  .sp-num{
+    flex:none;width:36px;height:36px;border-radius:10px;background:var(--teal-soft);color:var(--teal);
+    font-size:18px;font-weight:800;display:flex;align-items:center;justify-content:center;
+  }
+  .sp.primary .sp-num{background:rgba(255,255,255,.18);color:#fff}
+  .sp-body{display:flex;flex-direction:column;gap:2px;min-width:0}
+  .sp-body b{font-size:15.5px;line-height:1.4}
+  .sp-body em{font-style:normal;font-size:12.5px;color:var(--muted);line-height:1.5}
+  .path-note{font-size:13px;color:var(--muted);margin:0 0 4px}
+  .path-note a{color:var(--teal);font-weight:700}
+
+  /* ---------- 全貌一览 ---------- */
+  details.toc{
+    background:var(--paper);border:1px solid var(--line);border-radius:12px;
+    padding:0 18px;box-shadow:var(--shadow);margin-bottom:22px;
+  }
+  details.toc summary{
+    cursor:pointer;list-style:none;padding:14px 0;font-size:14.5px;font-weight:700;color:#3b4642;
+    display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  }
+  details.toc summary::-webkit-details-marker{display:none}
+  details.toc summary::before{content:"☰";color:var(--teal);font-size:13px}
+  details.toc summary span{font-weight:400;color:var(--muted);font-size:12.5px}
+  .toc-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 22px;padding:2px 0 10px}
+  .toc-item{
+    display:flex;gap:10px;align-items:flex-start;text-decoration:none;color:var(--ink);
+    padding:7px 0;border-top:1px dashed var(--line-soft);
+  }
+  .toc-item:nth-child(-n+2){border-top:0}
+  .toc-item b{flex:none;min-width:28px;font-size:16px;color:var(--teal);font-weight:800;line-height:1.4}
+  .toc-item span{display:flex;flex-direction:column;gap:1px;min-width:0}
+  .toc-item em{font-style:normal;font-size:13.5px;font-weight:700}
+  .toc-item i{font-style:normal;font-size:11.5px;color:var(--muted);line-height:1.5}
+  .toc-item:hover em{color:var(--teal)}
+  .toc-note{font-size:11.5px;color:var(--muted);margin:0 0 14px}
+  @media(max-width:760px){
+    .toc-grid{grid-template-columns:1fr}
+    .toc-item:nth-child(2){border-top:1px dashed var(--line-soft)}
+  }
+  @media(max-width:760px){.start-path{grid-template-columns:1fr}}
+  .btn{
+    font:inherit;font-size:15px;cursor:pointer;border:1px solid var(--line);
+    border-radius:9px;padding:9px 17px;background:var(--paper);color:var(--ink);
+    transition:transform .12s ease,border-color .12s ease,background .12s ease;
+  }
+  .btn:hover{border-color:var(--teal);transform:translateY(-1px)}
+  .btn:active{transform:translateY(0)}
+  .btn.primary{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:600}
+  .btn.primary:hover{background:var(--teal-deep)}
+  .btn.small{font-size:13.5px;padding:6px 12px;border-radius:7px}
+  .btn.ghost{background:transparent}
+
+  /* ---------- 区块 ---------- */
+  section{
+    background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);
+    padding:32px 34px;box-shadow:var(--shadow);margin-bottom:24px;scroll-margin-top:64px;
+  }
+  .sec-head{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:nowrap;
+    margin-bottom:6px;padding-bottom:12px;border-bottom:1px solid var(--line-soft);
+  }
+  .sec-head h2{flex:1;min-width:0}
+  .sec-no{
+    flex:none;font-size:38px;line-height:1;font-weight:800;color:var(--teal);
+    letter-spacing:-.04em;background:none;border:0;padding:0;min-width:42px;
+  }
+  .sec-no.start{
+    font-size:15px;letter-spacing:.08em;background:var(--teal-soft);border:1px solid #cfe4df;
+    border-radius:6px;padding:6px 10px;min-width:0;align-self:center;
+  }
+  .sec-no.appendix{font-size:24px;letter-spacing:0;min-width:0}
+  h2{font-size:26px;margin:0;letter-spacing:-.01em;line-height:1.35}
+  .sec-note{color:var(--muted);font-size:15.5px;margin:8px 0 24px;max-width:800px}
+  h3{font-size:17.5px;margin:0 0 8px;letter-spacing:-.005em}
+  .cap{font-size:13.5px;color:var(--muted)}
+
+  /* ---------- 演示：两个回答 ---------- */
+  .question{
+    background:var(--blue-soft);border:1px solid #d6e3f0;border-radius:12px;
+    padding:16px 18px;margin-bottom:20px;font-size:16.5px;
+  }
+  .question strong{color:var(--blue)}
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+  .ans{
+    border:1px solid var(--line);border-radius:12px;padding:18px 18px 14px;
+    background:#fcfdfc;height:100%;display:flex;flex-direction:column;
+  }
+  .ans.bad{border-color:#e7d3d1;background:#fdfafa}
+  .ans.good{border-color:#c9e2dd;background:#fbfefd}
+  .ans-top{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .tag{
+    display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.04em;
+    border-radius:5px;padding:2px 7px;
+  }
+  .tag.neutral{background:#eef0ec;color:#5b6662}
+  .tag.ok{background:#e2f2ee;color:var(--teal)}
+  .tag.bad{background:var(--red-soft);color:var(--red)}
+  .tag.warn{background:var(--amber-soft);color:#8f5209}
+  .ans-name{font-size:14px;font-weight:700;color:var(--ink)}
+  .ans-body{font-size:15.5px;flex:1}
+  .ans-foot{font-size:13px;color:var(--muted);border-top:1px dashed var(--line);padding-top:10px;margin-top:6px}
+
+  .cite{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:19px;height:19px;margin:0 1px;padding:0;
+    font-size:11.5px;font-weight:700;line-height:1;
+    color:var(--teal);background:var(--teal-soft);
+    border:1px solid #bfe0da;border-radius:5px;cursor:pointer;
+    vertical-align:super;transition:background .12s,color .12s;
+  }
+  .cite:hover{background:#d5ece7}
+  .cite.seen{background:var(--teal);color:#fff;border-color:var(--teal)}
+  .cite.fake{background:var(--red);border-color:var(--red);color:#fff}
+
+  .cite-bar{
+    display:flex;flex-wrap:wrap;align-items:center;gap:10px;
+    margin:16px 0 0;font-size:13.5px;color:var(--muted);
+  }
+  .cite-out{
+    margin-top:12px;border:1px solid var(--line);border-radius:10px;
+    padding:14px 16px;background:#fff;
+  }
+  .cite-out .cite-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+  .cite-out .cite-text{font-size:14.5px;margin:0;color:#3c4744}
+  .cite-out.is-fake{border-color:#e7c3c0;background:var(--red-soft)}
+  .cite-out.is-real{border-color:#c9e2dd;background:#f7fcfb}
+
+  .retrieval{margin-top:18px;border-top:1px dashed var(--line);padding-top:14px}
+  .retrieval-btn{
+    font:inherit;font-size:14px;cursor:pointer;color:var(--teal);
+    background:none;border:0;padding:0;text-decoration:underline;text-underline-offset:3px;
+  }
+  .chunks{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+  .chunk{
+    display:flex;gap:10px;align-items:flex-start;font-size:14px;
+    border:1px solid var(--line);border-radius:8px;padding:10px 12px;background:#fcfdfc;
+  }
+  .chunk .dot{flex:none;width:7px;height:7px;border-radius:50%;margin-top:9px}
+  .chunk.hit .dot{background:#2e9b8a}
+  .chunk.miss{background:var(--amber-soft);border-color:#efdcbd}
+  .chunk.miss .dot{background:var(--amber)}
+  .chunk b{font-weight:700}
+  .chunk .score{color:var(--muted);font-size:12.5px}
+
+  .verdict{
+    margin-top:18px;border-radius:10px;padding:14px 16px;font-size:15px;
+    background:var(--amber-soft);border:1px solid #efdcbd;color:#6f4410;
+    display:none;
+  }
+  .verdict.show{display:block}
+  .verdict strong{color:#5a360a}
+
+  .takeaway{
+    margin-top:22px;border-left:4px solid var(--teal);background:var(--teal-soft);
+    padding:14px 18px;border-radius:0 10px 10px 0;font-size:16px;
+  }
+
+  /* ---------- 三层结构 ---------- */
+  .layers{display:flex;flex-direction:column;gap:0;margin:6px 0 24px}
+  .layer{
+    border:1px solid var(--line);border-radius:11px;padding:16px 18px;background:#fcfdfc;
+  }
+  .layer .lname{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--teal);margin-bottom:4px}
+  .layer h3{margin-bottom:6px}
+  .layer p{font-size:14.5px;color:#46514d;margin:0}
+  .layer.readonly{border-left:4px solid #8ba9a3}
+  .layer.index{border-left:4px solid var(--teal)}
+  .layer.answer{border-left:4px solid var(--amber)}
+  .layer-arrow{
+    text-align:center;color:var(--muted);font-size:13px;padding:7px 0;
+    display:flex;align-items:center;justify-content:center;gap:8px;
+  }
+  .layer-arrow span{border:1px dashed var(--line);border-radius:999px;padding:1px 10px;background:var(--paper)}
+
+  .notes{display:grid;gap:12px;margin-top:18px}
+  .note-item{display:flex;gap:12px;font-size:15px;align-items:flex-start}
+  .note-item .n{
+    flex:none;width:22px;height:22px;border-radius:50%;background:var(--teal-soft);color:var(--teal);
+    font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;margin-top:4px;
+  }
+  .note-item b{font-weight:700}
+
+  table.cmp{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:6px}
+  table.cmp th{
+    text-align:left;background:#f4f6f4;color:#3b4642;font-size:13px;font-weight:700;
+    padding:10px 12px;border:1px solid var(--line);
+  }
+  table.cmp td{padding:11px 12px;border:1px solid var(--line);vertical-align:top}
+  table.cmp td:first-child{font-weight:600;color:#3b4642;background:#fbfcfb;white-space:nowrap}
+  table.cmp td.hl{background:#f4fbf9;color:var(--teal-deep);font-weight:600}
+
+  table.gloss{width:100%;border-collapse:collapse;font-size:14.5px}
+  table.gloss th{
+    text-align:left;background:#f4f6f4;color:#3b4642;font-size:12.5px;
+    letter-spacing:.04em;padding:10px 12px;border:1px solid var(--line);
+  }
+  table.gloss td{padding:10px 12px;border:1px solid var(--line);vertical-align:top}
+  table.gloss td:first-child{font-weight:700;color:var(--teal);white-space:nowrap;width:150px}
+  table.gloss td:nth-child(2){color:#2c3835}
+  table.gloss td:nth-child(3){color:var(--muted);font-size:13px;width:22%}
+  .gloss-line{
+    margin-top:18px;border:1px solid #bfe0da;background:#f7fcfb;border-radius:10px;
+    padding:14px 16px;font-size:14.5px;line-height:1.8;
+  }
+  .gloss-line b{color:var(--teal-deep)}
+
+  /* ---------- 好处 ---------- */
+  .gains{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:8px}
+  .gain{
+    border:1px solid var(--line);border-radius:11px;padding:16px 18px;background:#fcfdfc;
+  }
+  .gain .gtitle{font-size:15px;font-weight:700;color:var(--teal);margin-bottom:8px}
+  .gain .row{font-size:14px;line-height:1.65;margin-bottom:6px}
+  .gain .row .k{font-weight:700;color:var(--muted);font-size:12px;letter-spacing:.05em}
+  .gain .before{color:#68726d}
+  .gain .after{color:#2c3835}
+
+  .limits{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:20px}
+  .limit{
+    border:1px solid #efdcbd;background:var(--amber-soft);border-radius:11px;padding:15px 16px;
+  }
+  .limit h3{margin:0 0 6px;font-size:14.5px;color:#6f4410}
+  .limit p{margin:0;font-size:13.5px;color:#7c5a2e;line-height:1.65}
+
+  /* ---------- 路线 ---------- */
+  .routes{display:flex;flex-direction:column;gap:14px}
+  .route{
+    border:1px solid var(--line);border-radius:12px;padding:20px 22px;background:#fcfdfc;
+    position:relative;
+  }
+  .route.recommended{border-color:#bfe0da;background:#fbfefd;box-shadow:0 0 0 3px rgba(15,95,87,.05)}
+  .route-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+  .rbadge{
+    flex:none;width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;
+    background:var(--teal);color:#fff;font-size:13px;font-weight:800;
+  }
+  .route.b .rbadge{background:#5f7f93}
+  .route.c .rbadge{background:#8a7a63}
+  .route h3{margin:0;font-size:18px}
+  .route .who{font-size:13.5px;color:var(--muted);margin-bottom:12px}
+  .route ul{margin:0 0 10px;padding-left:20px;font-size:14.5px}
+  .route li{margin-bottom:5px}
+  .route .small-note{font-size:13px;color:var(--muted);margin:0}
+  .find-word{
+    background:#fff;border:1px dashed #bfe0da;border-radius:8px;padding:9px 12px;
+    font-size:14px;margin:10px 0 0;
+  }
+  .find-word b{color:var(--teal)}
+
+  .steps{list-style:none;counter-reset:s;padding:0;margin:8px 0 0}
+  .steps li{
+    counter-increment:s;position:relative;padding-left:40px;margin-bottom:12px;font-size:15px;
+  }
+  .steps li::before{
+    content:counter(s);position:absolute;left:0;top:3px;
+    width:26px;height:26px;border-radius:50%;background:var(--teal-soft);color:var(--teal);
+    font-size:13px;font-weight:800;display:flex;align-items:center;justify-content:center;
+  }
+  .steps li b{font-weight:700}
+
+  .callout{
+    margin-top:20px;border:1px solid #e7c3c0;background:var(--red-soft);
+    border-radius:11px;padding:15px 18px;font-size:14.5px;color:#6d2a2a;
+  }
+  .callout b{color:#5a2020}
+
+  /* ---------- 自检 ---------- */
+  .checker{
+    margin-top:20px;border:1px solid var(--line);border-radius:12px;padding:18px 20px;background:#fcfdfc;
+  }
+  .checker h3{font-size:16.5px;margin-bottom:4px}
+  .checker .cap{margin-bottom:14px}
+  .chk{
+    display:flex;gap:11px;align-items:flex-start;font-size:14.5px;
+    padding:8px 0;border-bottom:1px dashed var(--line-soft);cursor:pointer;
+  }
+  .chk:last-of-type{border-bottom:0}
+  .chk input{width:18px;height:18px;margin-top:4px;accent-color:var(--teal);flex:none;cursor:pointer}
+  .chk .why{display:block;font-size:12.5px;color:var(--muted);margin-top:1px}
+  .scorebar{height:6px;background:var(--line-soft);border-radius:999px;margin:14px 0 10px;overflow:hidden}
+  .scorebar i{display:block;height:100%;width:0;background:var(--teal);border-radius:999px;transition:width .25s ease}
+  .check-verdict{font-size:14.5px;font-weight:600;color:var(--teal)}
+  .check-verdict.warn{color:var(--amber)}
+  .check-verdict.bad{color:var(--red)}
+
+  /* ---------- 完整走一遍 ---------- */
+  .walk{display:flex;flex-direction:column;gap:16px}
+  .walk-step{
+    position:relative;border:1px solid var(--line);border-radius:12px;
+    padding:18px 20px 18px 60px;background:#fcfdfc;
+  }
+  .walk-step .wnum{
+    position:absolute;left:18px;top:17px;width:28px;height:28px;border-radius:9px;
+    background:var(--teal);color:#fff;font-size:13px;font-weight:800;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .walk-step .wk{font-size:11.5px;font-weight:800;letter-spacing:.08em;color:var(--teal);margin-bottom:3px}
+  .walk-step h3{margin:0 0 6px;font-size:16.5px}
+  .walk-step p{font-size:14.5px;margin-bottom:8px}
+  .walk-step ul{margin:0 0 4px;padding-left:20px;font-size:14.5px}
+  .walk-step li{margin-bottom:4px}
+  .figure{margin:14px 0 6px;border:1px solid var(--line);border-radius:11px;background:#fff;overflow:hidden}
+  .fig-head{
+    background:#f4f6f4;border-bottom:1px solid var(--line);padding:8px 13px;
+    font-size:12.5px;color:var(--muted);display:flex;justify-content:space-between;
+    gap:10px;flex-wrap:wrap;
+  }
+  .fig-body{padding:14px 16px}
+  .mock-search{
+    display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;
+    padding:7px 14px;font-size:14px;color:#3b4642;background:#fcfdfc;max-width:420px;
+  }
+  .mock-search .ico{color:var(--muted);font-size:12px;border-right:1px solid var(--line);padding-right:8px}
+  .mock-list{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+  .mock-item{
+    display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:13.5px;
+    border:1px solid var(--line-soft);border-radius:7px;padding:8px 11px;background:#fcfdfc;
+  }
+  .mock-item b{font-weight:700}
+  .mock-item span{color:var(--muted);font-size:12.5px;text-align:right}
+  .status{display:inline-block;font-size:12px;font-weight:700;border-radius:5px;padding:1px 8px;white-space:nowrap}
+  .status.ok{background:#e2f2ee;color:#0f5f57}
+  .status.wait{background:var(--amber-soft);color:#8f5209}
+  .status.bad{background:var(--red-soft);color:var(--red)}
+  .fig-note{font-size:12.5px;color:var(--muted);margin:10px 0 0}
+  .try-box{border:1px solid #bfe0da;background:#f7fcfb;border-radius:9px;padding:13px 15px;font-size:14px;margin-top:10px}
+  .try-box p{margin:0 0 7px}
+  .try-box p:last-child{margin:0}
+  .try-box b{color:var(--teal-deep)}
+
+  /* ---------- 提问四件套 ---------- */
+  .pieces{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:6px}
+  .piece{border:1px solid var(--line);border-radius:11px;padding:15px 17px;background:#fcfdfc}
+  .piece .pn{font-size:12px;font-weight:800;color:var(--teal);letter-spacing:.08em;margin-bottom:3px}
+  .piece h3{margin:0 0 6px;font-size:15.5px}
+  .piece .quote{
+    font-size:14px;color:var(--teal-deep);background:var(--teal-soft);
+    border-radius:7px;padding:8px 11px;margin-bottom:8px;
+  }
+  .piece p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.65}
+
+  .generator{
+    margin-top:18px;border:1px solid #bfe0da;border-radius:12px;padding:18px 20px;background:#fbfefd;
+  }
+  .gen-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+  .gen-row label{font-size:13.5px;font-weight:700;color:#3b4642;flex:none}
+  select.inp,input.inp{
+    font:inherit;font-size:14.5px;color:var(--ink);background:#fff;
+    border:1px solid var(--line);border-radius:8px;padding:8px 10px;
+  }
+  select.inp:focus,input.inp:focus{outline:2px solid #b9ded8;border-color:var(--teal)}
+  .gen-row .grow{flex:1 1 200px;min-width:160px}
+  pre.code{
+    background:#f2f5f4;border:1px solid var(--line);border-radius:9px;
+    padding:14px 16px;margin:0 0 12px;overflow-x:auto;
+    font-family:ui-monospace,SFMono-Regular,Consolas,"Cascadia Code","Microsoft YaHei",monospace;
+    font-size:13.5px;line-height:1.85;color:#263238;white-space:pre-wrap;word-break:break-word;
+  }
+  .row-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+  table.badgood{width:100%;border-collapse:collapse;font-size:14.5px;margin-top:6px}
+  table.badgood th{
+    text-align:left;font-size:12.5px;letter-spacing:.04em;color:#3b4642;
+    background:#f4f6f4;padding:10px 12px;border:1px solid var(--line);
+  }
+  table.badgood td{padding:11px 12px;border:1px solid var(--line);vertical-align:top}
+  table.badgood td.b{color:#8a5a5a;background:#fdfafa;width:34%}
+  table.badgood td.g{color:#2c3835;background:#fbfefd}
+
+  .followups{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .followups .fu{
+    font-size:13.5px;background:var(--teal-soft);color:var(--teal-deep);
+    border-radius:999px;padding:5px 12px;
+  }
+
+  /* ---------- 五种问法 ---------- */
+  .asks{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .ask{
+    border:1px solid var(--line);border-radius:11px;padding:16px 17px;background:#fcfdfc;
+    display:flex;flex-direction:column;
+  }
+  .ask .atype{font-size:12px;font-weight:800;color:var(--teal);letter-spacing:.08em;margin-bottom:3px}
+  .ask h3{margin:0 0 4px;font-size:16px}
+  .ask .when{font-size:13px;color:var(--muted);margin-bottom:10px}
+  .ask .sentence{
+    font-size:14px;line-height:1.7;background:#f3f7f6;border-left:3px solid #bfe0da;
+    border-radius:0 7px 7px 0;padding:9px 12px;margin-bottom:10px;flex:1;
+  }
+  .ask .sentence em{font-style:normal;color:var(--teal);font-weight:700}
+  .ask .btn{align-self:flex-start}
+
+  table.trouble{width:100%;border-collapse:collapse;font-size:14px;margin-top:22px}
+  table.trouble th{
+    text-align:left;font-size:12.5px;color:#3b4642;background:#f4f6f4;
+    padding:10px 12px;border:1px solid var(--line);letter-spacing:.04em;
+  }
+  table.trouble td{padding:11px 12px;border:1px solid var(--line);vertical-align:top}
+  table.trouble td:first-child{font-weight:600;color:#5a4a36;width:23%}
+  table.trouble td:last-child{color:var(--teal-deep)}
+
+  /* ---------- 维护 ---------- */
+  .keep3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}
+  .keepcard{border:1px solid var(--line);border-radius:11px;padding:15px 16px;background:#fcfdfc}
+  .keepcard .kn{font-size:12px;font-weight:800;color:var(--amber);letter-spacing:.08em;margin-bottom:3px}
+  .keepcard h3{margin:0 0 5px;font-size:15px}
+  .keepcard p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.65}
+  .reassure{
+    border:1px solid #bfe0da;background:var(--teal-soft);border-radius:11px;
+    padding:16px 18px;font-size:15.5px;
+  }
+  .reassure b{color:var(--teal-deep)}
+  .reassure a{color:var(--teal-deep);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+  details.fold{
+    margin-top:14px;border:1px solid var(--line);border-radius:10px;background:#fcfdfc;
+  }
+  details.fold summary{
+    cursor:pointer;padding:13px 16px;font-size:14.5px;font-weight:600;color:#3b4642;
+    list-style:none;display:flex;align-items:center;gap:8px;
+  }
+  details.fold summary::-webkit-details-marker{display:none}
+  details.fold summary::before{content:"＋";color:var(--teal);font-weight:800;font-size:13px}
+  details.fold[open] summary::before{content:"－"}
+  details.fold .fold-body{padding:0 16px 16px;font-size:14.5px;color:#46514d}
+  details.fold ol{margin:0;padding-left:21px}
+  details.fold li{margin-bottom:6px}
+
+  /* ---------- 速查卡 ---------- */
+  #cheatsheet{border:2px solid #cfdad6;background:#fff}
+  .cheat-table{width:100%;border-collapse:collapse;font-size:14.5px}
+  .cheat-table td,.cheat-table th{padding:13px 14px;border:1px solid var(--line);vertical-align:top}
+  .cheat-table th[scope="row"]{
+    width:96px;font-weight:700;color:var(--teal);background:#f6fbf9;
+    white-space:nowrap;text-align:left;
+  }
+  .cheat-table td:nth-child(2){font-weight:600;width:30%}
+  .formula{
+    margin-top:16px;border:1px dashed #bfe0da;border-radius:10px;padding:14px 16px;
+    background:#f7fcfb;font-size:14.5px;
+  }
+  .formula b{color:var(--teal)}
+
+  /* ---------- 参考 ---------- */
+  .refs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+  .ref{
+    border:1px solid var(--line);border-radius:9px;padding:11px 13px;background:#fcfdfc;font-size:13.5px;
+  }
+  .ref a{color:var(--teal);text-decoration:none;font-weight:700}
+  .ref a:hover{text-decoration:underline}
+  .ref span{display:block;color:var(--muted);margin-top:3px}
+
+  footer{
+    color:var(--muted);font-size:13.5px;text-align:center;padding:10px 0 0;line-height:1.9;
+  }
+
+  #toast{
+    position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);
+    background:#1b2422;color:#fff;padding:10px 18px;border-radius:999px;
+    font-size:14px;opacity:0;pointer-events:none;transition:all .2s ease;z-index:99;
+  }
+  #toast.show{opacity:1;transform:translate(-50%,0)}
+
+  .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
+  @media (max-width:860px){
+    body{font-size:16px}
+    .wrap{padding:0 12px 48px}
+    .hero{padding:34px 0 6px}
+    section{padding:24px 18px}
+    .compare,.gains,.pieces,.asks,.refs{grid-template-columns:1fr}
+    .limits,.keep3{grid-template-columns:1fr}
+    .cheat-table th[scope="row"]{width:72px}
+    .walk-step{padding:16px 15px 16px 52px}
+    .walk-step .wnum{left:14px;top:14px}
+    .site-nav .inner{padding:8px 12px}
+    table.stackable{display:block;border:0}
+    table.stackable thead{display:none}
+    table.stackable tbody{display:block}
+    table.stackable tr{
+      display:block;border:1px solid var(--line);border-radius:11px;
+      margin-bottom:12px;overflow:hidden;background:#fff;
+    }
+    table.stackable td,table.stackable th[scope="row"]{
+      display:block;width:auto!important;border:0;border-bottom:1px solid var(--line-soft);
+      padding:10px 14px;white-space:normal!important;text-align:left;
+    }
+    table.stackable tr>td:last-child{border-bottom:0}
+    table.stackable td::before{
+      content:attr(data-label);display:block;font-size:11.5px;font-weight:700;
+      color:var(--muted);letter-spacing:.06em;margin-bottom:2px;
+    }
+    table.stackable td:first-child{background:#f6fbf9;font-weight:700}
+  }
+
+  @media print{
+    body{background:#fff;font-size:12pt}
+    .site-nav,.hero,footer,section:not(#cheatsheet),.no-print{display:none!important}
+    #cheatsheet{display:block!important;border:0;box-shadow:none;padding:0;margin:0}
+    .wrap{padding:0;max-width:none}
+    .cheat-table td{padding:10px 12px}
+    a{color:inherit;text-decoration:none}
+  }
+</style>
+</head>
+<body>
+
+<nav class="site-nav no-print" aria-label="页面导航">
+  <div class="inner">
+    <span class="nav-label">目录</span>
+    <a href="#demo">先看效果</a>
+    <a href="#what">是什么</a>
+    <a href="#why">好处</a>
+    <a href="#connect">怎么接</a>
+    <a href="#walkthrough">走一遍</a>
+    <a href="#sources">资料从哪来</a>
+    <a href="#ask">怎么问</a>
+    <a href="#query">怎么查</a>
+    <a href="#keep">维护</a>
+    <a href="#cheatsheet">速查卡</a>
+    <a href="#glossary">黑话表</a>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<header class="hero">
+  <p class="kicker">给第一次用知识库的上班族</p>
+  <h1>把资料丢进去，<br>然后像问同事一样问它</h1>
+  <p class="lede">这是一份给上班族的<strong>知识库使用指南</strong>：教你把已有的资料接进去、问出带出处的答案，并判断该不该信。不用整理文件夹，也不用装软件。</p>
+  <p class="scope-note"><b>先说明白：这是一份说明书，不是知识库本身。</b>它不保存你的资料，也不会回答问题。它教你把资料放进你已经在用的产品里，然后怎么问、怎么核对。</p>
+  <p class="promise">这份指南只做一件事：让你在 10 分钟内，用自己的资料问出第一个答案。</p>
+  <div class="hero-meta">
+    <span class="pill">阅读约 21 分钟</span>
+    <span class="pill">4 个演示 + 1 个练习场</span>
+    <span class="pill">例子全是上班场景</span>
+    <span class="pill">不涉及部署和 API Key</span>
+  </div>
+
+  <div class="start-path">
+    <a class="sp" href="#demo">
+      <span class="sp-num">1</span>
+      <span class="sp-body"><b>先看懂它是什么</b><em>30 秒 · 看两个回答的差别</em></span>
+    </a>
+    <a class="sp primary" href="练习场.html">
+      <span class="sp-num">2</span>
+      <span class="sp-body"><b>亲手试一遍</b><em>10 分钟 · 跑通 5 步</em></span>
+    </a>
+    <a class="sp" href="#connect">
+      <span class="sp-num">3</span>
+      <span class="sp-body"><b>用起来</b><em>照着第 3 节做</em></span>
+    </a>
+  </div>
+  <p class="path-note">不知道从哪开始？按 1 → 2 → 3 走一遍。想直接查结论，翻到 <a href="#cheatsheet">一页速查卡</a>。</p>
+</header>
+
+<details class="toc">
+  <summary>先看全貌 <span>一共 9 节 + 2 个附录，每节讲什么</span></summary>
+  <div class="toc-grid">
+    <a class="toc-item" href="#what"><b>1</b><span><em>它到底是什么</em><i>三层结构，上传 ≠ 训练</i></span></a>
+    <a class="toc-item" href="#why"><b>2</b><span><em>接进来能多做什么</em><i>4 个上班场景，3 条局限</i></span></a>
+    <a class="toc-item" href="#connect"><b>3</b><span><em>怎么接</em><i>三条路线，先找到入口</i></span></a>
+    <a class="toc-item" href="#walkthrough"><b>4</b><span><em>完整走一遍</em><i>拿一份制度，10 分钟跑通</i></span></a>
+    <a class="toc-item" href="#sources"><b>5</b><span><em>资料从哪来</em><i>什么能放，怎么导最省事</i></span></a>
+    <a class="toc-item" href="#ask"><b>6</b><span><em>怎么和它配合</em><i>四句话，决定答案好坏</i></span></a>
+    <a class="toc-item" href="#query"><b>7</b><span><em>怎么灵活查</em><i>五种问法 + 答错怎么改</i></span></a>
+    <a class="toc-item" href="#keep"><b>8</b><span><em>长期怎么养</em><i>每周 10 分钟，不整理也可以</i></span></a>
+    <a class="toc-item" href="#cheatsheet"><b>9</b><span><em>一页速查卡</em><i>打印出来贴工位</i></span></a>
+    <a class="toc-item" href="#glossary"><b>附1</b><span><em>黑话翻译表</em><i>听到的词，换成人话</i></span></a>
+    <a class="toc-item" href="#refs"><b>附2</b><span><em>参考项目</em><i>抄了谁的思路</i></span></a>
+  </div>
+  <p class="toc-note">想直接开始，按上面的 1 → 2 → 3；想查具体问题，用顶部目录或这一页。</p>
+</details>
+
+<!-- ================= 00 演示 ================= -->
+<section id="demo">
+  <div class="sec-head"><span class="sec-no start">开始</span><h2>先看两个回答</h2></div>
+  <p class="sec-note">同一个问题，问「没读过你资料的机器人」和「读过你资料的助手」，差别在哪。下面答案里的数字角标可以点。</p>
+
+  <div class="question">
+    <strong>你问：</strong>我们公司出差打车，最晚多久内要提交报销？
+  </div>
+
+  <div class="compare">
+    <div class="ans bad">
+      <div class="ans-top">
+        <span class="tag neutral">没接知识库</span>
+        <span class="ans-name">普通聊天机器人</span>
+      </div>
+      <div class="ans-body">
+        <p>一般是 30 天内提交。具体以公司财务规定为准，建议你问一下财务。</p>
+      </div>
+      <div class="ans-foot">听起来很合理，但没有一处能核对。这个「30 天」是它猜的。</div>
+    </div>
+
+    <div class="ans good">
+      <div class="ans-top">
+        <span class="tag ok">接了知识库</span>
+        <span class="ans-name">读过《差旅报销管理办法》的助手</span>
+      </div>
+      <div class="ans-body">
+        <p>出差结束后 <strong>15 个工作日内</strong>提交；跨月费用在 <strong>次月 5 日前</strong>补交。网约车发票还要附行程单，否则会被退回。<!--
+        --><button class="cite" type="button" data-cite="c1" aria-label="查看出处 1">1</button><!--
+        --><button class="cite" type="button" data-cite="c2" aria-label="查看出处 2">2</button><!--
+        --><button class="cite" type="button" data-cite="c3" aria-label="查看出处 3">3</button></p>
+      </div>
+      <div class="ans-foot">每句话都能追到原文。但第 3 个出处，你得亲自点开看看。</div>
+    </div>
+  </div>
+
+  <div class="cite-bar">
+    <span>点开 3 个出处核对一下：</span>
+    <strong id="citeCount" style="color:#0f5f57">已点开 0 / 3</strong>
+    <button class="btn small ghost" type="button" id="citeReset">重来</button>
+  </div>
+
+  <div class="cite-out" id="citeOut" hidden></div>
+
+  <div class="retrieval">
+    <button class="retrieval-btn" type="button" id="retToggle" aria-expanded="false" aria-controls="retPanel">
+      它回答之前，检索到了什么？
+    </button>
+    <div class="chunks" id="retPanel" hidden>
+      <div class="chunk hit">
+        <span class="dot" aria-hidden="true"></span>
+        <div><b>《差旅报销管理办法 v3》第 2.3 条</b> · 相关度 0.91<br>
+        「出差结束后 15 个工作日内提交报销；跨月费用须在次月 5 日前补交。」</div>
+      </div>
+      <div class="chunk hit">
+        <span class="dot" aria-hidden="true"></span>
+        <div><b>财务部通知（2026-03-12）</b> · 相关度 0.86<br>
+        「网约车发票需附行程单，否则退回。」</div>
+      </div>
+      <div class="chunk miss">
+        <span class="dot" aria-hidden="true"></span>
+        <div><b>《员工手册 2024 版》第 5.2 条</b> · 相关度 0.42<br>
+        「员工请假需提前 3 个工作日申请。」<span class="score">—— 这段跟报销无关，只是都出现了「申请」两个字。</span></div>
+      </div>
+      <p class="cap" style="margin:8px 0 0">检索不是「找到答案」，是「找到最像的几段」。第三段就是被关键词带进来的，模型可能拿它去凑一个出处。</p>
+    </div>
+  </div>
+
+  <div class="verdict" id="citeVerdict">
+    <strong>3 个出处，1 个是编的。</strong>答案本身没错，但第 3 条引用的《员工手册》里根本没有这句话——它只是把出处写得像真的。所以：<strong>每次点开看一眼</strong>，尤其是数字、日期、条款号。
+  </div>
+
+  <div class="takeaway">
+    知识库只做一件事：<strong>回答之前，先去你的资料里找一遍，然后把找到的地方指给你看。</strong>
+  </div>
+</section>
+
+<!-- ================= 01 是什么 ================= -->
+<section id="what">
+  <div class="sec-head"><span class="sec-no">1</span><h2>它到底是什么</h2></div>
+  <p class="sec-note">一句话：<strong>知识库 = 你的资料 + 一个会查资料的助手。</strong>它不神秘，就是三层东西叠在一起。</p>
+
+  <div class="layers">
+    <div class="layer readonly">
+      <div class="lname">第 1 层 · 原始资料（只读）</div>
+      <h3>你的 PDF、Word、群里的文件、网页</h3>
+      <p>位置不变，内容不改。上传只是给了它一份「可读副本」，你的原文件还在原地。</p>
+    </div>
+    <div class="layer-arrow"><span>上传 / 接入 ↓</span></div>
+    <div class="layer index">
+      <div class="lname">第 2 层 · 索引（AI 生成，可删可重建）</div>
+      <h3>把长文档切成小段，记下每段在第几页</h3>
+      <p>它不是复制你的文件，是给文件做了一张「目录卡」。删掉索引，你的原文件一根头发都不会少。</p>
+    </div>
+    <div class="layer-arrow"><span>你提问 ↓</span></div>
+    <div class="layer answer">
+      <div class="lname">第 3 层 · 回答（每次现查）</div>
+      <h3>先找 3–5 段最相关的，再组织成人话，最后标出处</h3>
+      <p>每次提问都重新找一遍，不是从记忆里背出来的。所以你改一个字，它下次就跟着变。</p>
+    </div>
+  </div>
+
+  <div class="notes">
+    <div class="note-item"><span class="n">1</span><div><b>上传 ≠ 训练。</b>它不会「记住」或「学会」你的资料。你删掉文件，它立刻查不到；你换一份新版，它下次就按新版答。</div></div>
+    <div class="note-item"><span class="n">2</span><div><b>它不是「更聪明的搜索框」。</b>搜索丢给你 20 个链接让你自己翻；它读完了，给你一段话，还告诉你这话从哪来。</div></div>
+    <div class="note-item"><span class="n">3</span><div><b>它像一个读过你资料的实习生。</b>看得快、写得顺，但会看错、也会编。所以出处必须点开——这不是不信任它，是基本操作。</div></div>
+  </div>
+
+  <h3 style="margin-top:26px">和网盘、收藏夹、搜索框的区别</h3>
+  <table class="cmp stackable">
+    <thead><tr><th>维度</th><th>网盘 / 收藏夹</th><th>搜索框</th><th>知识库</th></tr></thead>
+    <tbody>
+      <tr><td>你存什么</td><td>整份文件</td><td>不用存</td><td>整份文件</td></tr>
+      <tr><td>怎么找</td><td>记得名字和位置</td><td>记得关键词</td><td class="hl">说清楚你要什么</td></tr>
+      <tr><td>找到之后</td><td>自己翻</td><td>自己翻</td><td class="hl">它读给你听</td></tr>
+      <tr><td>跨文件汇总</td><td>不能</td><td>不能</td><td class="hl">能</td></tr>
+      <tr><td>有没有出处</td><td>没有</td><td>有链接</td><td class="hl">有，能点回原文</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ================= 02 好处 ================= -->
+<section id="why">
+  <div class="sec-head"><span class="sec-no">2</span><h2>接进来，能多做什么</h2></div>
+  <p class="sec-note">省下的不是打字时间，是「翻找 + 确认」的时间。下面四个都是上班场景。</p>
+
+  <div class="gains">
+    <div class="gain">
+      <div class="gtitle">查制度</div>
+      <div class="row"><span class="k">以前</span> <span class="before">翻群聊、问同事、找 HR 要最新版</span></div>
+      <div class="row"><span class="k">现在</span> <span class="after">「出差打车多久内报销？」一句话，带条款号</span></div>
+    </div>
+    <div class="gain">
+      <div class="gtitle">写周报</div>
+      <div class="row"><span class="k">以前</span> <span class="before">翻一周的聊天记录和文档，边看边拼</span></div>
+      <div class="row"><span class="k">现在</span> <span class="after">「把 5 份会议纪要里跟我有关的待办列出来，分三组」</span></div>
+    </div>
+    <div class="gain">
+      <div class="gtitle">接客户</div>
+      <div class="row"><span class="k">以前</span> <span class="before">翻历史邮件和报价单，怕前后说法不一致</span></div>
+      <div class="row"><span class="k">现在</span> <span class="after">「上次给 A 客户的报价口径是什么？和这次冲突吗？」</span></div>
+    </div>
+    <div class="gain">
+      <div class="gtitle">带新人</div>
+      <div class="row"><span class="k">以前</span> <span class="before">同样的问题讲第 8 遍</span></div>
+      <div class="row"><span class="k">现在</span> <span class="after">让新人自己问库，你只补库里没有的那部分</span></div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px">但它做不到这三件事</h3>
+  <div class="limits">
+    <div class="limit">
+      <h3>资料错了，它也错</h3>
+      <p>它不会质疑你的制度，只会照着念。库里放着 2024 版，它就一直答 2024 版。</p>
+    </div>
+    <div class="limit">
+      <h3>没传的，它不知道</h3>
+      <p>没进库 = 不存在。它不会主动去翻你的硬盘，也不会替你想起来还有份文件没传。</p>
+    </div>
+    <div class="limit">
+      <h3>它会编</h3>
+      <p>数字、日期、条款号是重灾区。它会把「看起来像」的句子拼成出处。所以每次点开看一眼。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 怎么接 ================= -->
+<section id="connect">
+  <div class="sec-head"><span class="sec-no">3</span><h2>怎么接：三条路线，从最省事开始</h2></div>
+  <p class="sec-note">不用一上来就搭系统。先走 A，今天就能用；B 用来试水；C 等你有明确需求再说。</p>
+
+  <div class="routes">
+    <div class="route recommended a">
+      <div class="route-top">
+        <span class="rbadge">A</span>
+        <h3>用你已经在用的产品</h3>
+        <span class="tag ok">推荐 · 今天就能用</span>
+      </div>
+      <p class="who">适合：不想装任何东西，只想先把资料用起来。</p>
+      <ul>
+        <li><strong>公司资料</strong>：飞书、钉钉、企业微信、语雀、Notion 里的「知识库 / 文档问答 / AI 助手」。</li>
+        <li><strong>个人资料</strong>：豆包、Kimi、腾讯元宝、通义、夸克里的「上传文件 / 文件问答 / 知识库」。</li>
+      </ul>
+      <div class="find-word">
+        找不到入口就搜这几个词：<b>知识库 · 文件问答 · 上传文件 · 智能体 · AI 助手</b>
+      </div>
+      <p class="small-note" style="margin-top:10px">产品会改版，菜单不一定和本文一样；这里只作举例，不构成推荐。记住关键词，比记住位置管用。</p>
+    </div>
+
+    <div class="route b">
+      <div class="route-top">
+        <span class="rbadge">B</span>
+        <h3>聊天工具 + 每次传文件</h3>
+        <span class="tag neutral">适合试水</span>
+      </div>
+      <p class="who">适合：一次性任务，比如读一份合同、总结一份报告。</p>
+      <ul>
+        <li>把 PDF 或 Word 直接拖进对话，然后提问。不建库，不配置。</li>
+        <li>缺点：换个对话就忘了，不能积累，也不方便反复问同一批资料。</li>
+        <li>想长期用，还是回到 A。</li>
+      </ul>
+    </div>
+
+    <div class="route c">
+      <div class="route-top">
+        <span class="rbadge">C</span>
+        <h3>自己搭一套</h3>
+        <span class="tag warn">第一周别碰</span>
+      </div>
+      <p class="who">适合：数据不能出内网、要接公司系统、要给多人分权限。</p>
+      <ul>
+        <li>常见开源方案：Dify、FastGPT、RAGFlow、MaxKB。</li>
+        <li>需要：一台机器、Docker、模型 Key、基本运维。</li>
+        <li>如果这三样你都没有，说明现在还用不上它。</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <h3 style="margin-top:26px" id="find-entry">入口在哪：四步通用找法</h3>
+  <p class="cap" style="margin-bottom:14px">不同软件把入口藏在不同地方，但找法是一样的。按顺序试，四步之内基本都能找到。</p>
+
+  <div class="pieces">
+    <div class="piece">
+      <div class="pn">第 1 步</div>
+      <h3>找字</h3>
+      <div class="quote">资料库 · 知识库 · 文件问答 · 上传文件 · 连接器</div>
+      <p>先在这些词上找。自己存资料的地方，常叫「资料库 / 知识库」；接外部服务的地方，常叫「连接器 / 授权」。</p>
+    </div>
+    <div class="piece">
+      <div class="pn">第 2 步</div>
+      <h3>找位置</h3>
+      <div class="quote">左侧边栏 → 输入框的「+」→ 设置 / 头像</div>
+      <p>按这个顺序看。左侧边栏最常见；输入框旁的「+」「回形针」通常只管当前这次对话；「授权 / 连接 / 账号」一般在设置里。</p>
+    </div>
+    <div class="piece">
+      <div class="pn">第 3 步</div>
+      <h3>看标志</h3>
+      <div class="quote">已连接 · 绿点 · 文件列表 · 能勾选</div>
+      <p>出现「已连接」或绿点，能看到文件列表和「解析中 / 已就绪」，提问时能勾选到它，才算真的接上了。</p>
+    </div>
+    <div class="piece">
+      <div class="pn">第 4 步</div>
+      <h3>验一次</h3>
+      <div class="quote">问一句只有你资料里才有的话</div>
+      <p>比如一个内部编号、一条特殊规定。它能复述原话，才算读到了。再新开一个对话、不重传文件问一遍：还答得出是持久库，答不出就只是临时附件。</p>
+    </div>
+  </div>
+
+  <div class="reassure" style="margin-top:6px">
+    <b>连上 ≠ 用上。</b>三个最常见的坑：传到「当前对话」却以为建了库，新开对话就没了；连上了但提问时没勾选，它还是普通聊天；传完立刻问，状态还在「解析中」。
+  </div>
+
+  <h3 style="margin-top:26px">走 A 路线的 5 步</h3>
+  <ol class="steps">
+    <li><b>选一个入口。</b>今天只用你已经在用的那个，别为了这件事新装软件。</li>
+    <li><b>建一个空知识库，名字要能看懂。</b>比如「市场部-2026」，别叫「新建知识库 3」。</li>
+    <li><b>先放 5 份，不要一次全传。</b>选你最常被问到的资料，而不是最全的资料。</li>
+    <li><b>等它处理完。</b>列表里一般会显示「解析中 / 已就绪」，没就绪先别急着问。</li>
+    <li><b>问一个你已知答案的问题。</b>答对了，说明它真读到了；答错了，翻到「答错了怎么改」那张表。</li>
+  </ol>
+
+  <div class="callout">
+    <b>一条底线：</b>公司资料别传到个人账号。客户名单、身份证、报价底价、未公开财报，先删掉或脱敏再传。优先用公司批准的入口——省下来的时间，不值得用一次事故换。
+  </div>
+
+  <div class="checker">
+    <h3>接入前自检 · 勾完再传</h3>
+    <p class="cap">这一步比选哪个产品重要。传错了，后面问什么都是错的。</p>
+    <label class="chk"><input type="checkbox" data-chk> <span>文件是文字版，不是扫描图片<span class="why">打开文件，能用鼠标选中文字，才算有文字层。</span></span></label>
+    <label class="chk"><input type="checkbox" data-chk> <span>单份文件没超过产品限制<span class="why">常见上限 50–100MB；超长文档先按章节拆开。</span></span></label>
+    <label class="chk"><input type="checkbox" data-chk> <span>文件名能看懂<span class="why">「最终版2-副本.docx」这种，你自己三个月后也认不出来。</span></span></label>
+    <label class="chk"><input type="checkbox" data-chk> <span>里面没有不该外传的内容<span class="why">客户名单、身份证、底价、未公开财报。</span></span></label>
+    <label class="chk"><input type="checkbox" data-chk> <span>我知道这份资料以后会在什么场景被问到<span class="why">想不到场景的，先别传——它只会稀释检索结果。</span></span></label>
+    <label class="chk"><input type="checkbox" data-chk> <span>第一批不超过 5 份<span class="why">先验证「问得准」，再扩充。</span></span></label>
+    <div class="scorebar" aria-hidden="true"><i id="scoreFill"></i></div>
+    <div class="check-verdict" id="chkVerdict">勾选上面的项目，这里会给结论。</div>
+  </div>
+</section>
+
+<!-- ================= 04 完整走一遍 ================= -->
+<section id="walkthrough">
+  <div class="sec-head"><span class="sec-no">4</span><h2>完整走一遍：从一份制度到第一个答案</h2></div>
+  <p class="sec-note">用上班最常遇到的一件事——查报销——把前面的步骤串一遍。全程大约 10 分钟，你可以拿自己公司的制度跟着做。下面的界面是示意图，不同产品长得不一样，认关键词和状态就行。</p>
+
+  <div class="walk">
+
+    <div class="walk-step">
+      <div class="wnum">1</div>
+      <div class="wk">准备 · 3 分钟</div>
+      <h3>挑一份「你会反复问」的资料</h3>
+      <p>找《差旅报销管理办法》。先确认三件事，再上传：</p>
+      <ul>
+        <li>打开后能用鼠标选中文字。选不中，说明是扫描图，得先 OCR。</li>
+        <li>文件名改成能看懂的样子，比如 <code>差旅报销管理办法-2026版</code>。</li>
+        <li>把附表里的员工名单、银行卡号删掉。制度正文可以传，个人信息不行。</li>
+      </ul>
+    </div>
+
+    <div class="walk-step">
+      <div class="wnum">2</div>
+      <div class="wk">找入口 · 1 分钟</div>
+      <h3>在你已经在用的工具里，搜这几个词</h3>
+      <p>不用新装软件。打开飞书、钉钉、企业微信、语雀、Notion，或者豆包、Kimi、腾讯元宝，在搜索框里敲下面任意一个词。</p>
+      <div class="figure">
+        <div class="fig-head"><span>示意图 · 入口通常藏在这几个词后面</span><span>各家叫法不同</span></div>
+        <div class="fig-body">
+          <div class="mock-search"><span class="ico">搜索</span> 知识库</div>
+          <div class="mock-list">
+            <div class="mock-item"><b>知识库</b><span>团队文档、语雀、Notion 常见</span></div>
+            <div class="mock-item"><b>文件问答 / 上传文件</b><span>豆包、Kimi、元宝常见</span></div>
+            <div class="mock-item"><b>AI 助手 / 智能体</b><span>钉钉、企业微信、飞书常见</span></div>
+          </div>
+        </div>
+      </div>
+      <p class="fig-note">找不到就换一个词再搜。比记住菜单位置更管用的，是记住这几个关键词。</p>
+    </div>
+
+    <div class="walk-step">
+      <div class="wnum">3</div>
+      <div class="wk">上传 · 2 分钟</div>
+      <h3>新建一个库，先只放这一份</h3>
+      <p>库名写「行政-制度」，别写「新建知识库 3」。上传后盯住状态，不是传完就能问。</p>
+      <div class="figure">
+        <div class="fig-head"><span>示意图 · 上传后看状态</span><span>已就绪 = 可以问</span></div>
+        <div class="fig-body">
+          <div class="mock-list">
+            <div class="mock-item"><b>差旅报销管理办法-2026版.pdf</b><span class="status ok">已就绪</span></div>
+            <div class="mock-item"><b>员工手册-2024版.pdf</b><span class="status wait">解析中 60%</span></div>
+            <div class="mock-item"><b>报销单扫描件.jpg</b><span class="status bad">解析失败</span></div>
+          </div>
+          <p class="fig-note">「解析失败」多半是扫描件没有文字层。先 OCR，再传；否则它读到的是一张图。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="walk-step">
+      <div class="wnum">4</div>
+      <div class="wk">验证 · 2 分钟</div>
+      <h3>问一个你已经知道答案的问题</h3>
+      <p>这一步是整份指南里最重要的：先确认它真的读到了，再开始信任它。</p>
+      <div class="try-box">
+        <p><b>你这样问：</b>只根据我上传的《差旅报销管理办法》，出差打车最晚多久内提交？给我条款号和原文。</p>
+        <p><b>它应该答：</b>出差结束后 15 个工作日内；跨月费用在次月 5 日前补交。出处：第 2.3 条。</p>
+        <p><b>如果它说「找不到」：</b>先看状态是不是「已就绪」，再把问题换成「报销 打车 时限」三个词重问一次。</p>
+        <p><b>如果它答得不对：</b>先别换模型，问它「你检索到了哪几段」，多半是没找到，不是不会说。</p>
+      </div>
+    </div>
+
+    <div class="walk-step">
+      <div class="wnum">5</div>
+      <div class="wk">留下来 · 1 分钟</div>
+      <h3>把这句提问存进备忘录</h3>
+      <p>下次只改资料名和问题，不用重新想怎么问。比如把它改成：「只根据我上传的《员工手册》，年假怎么算？给我条款号和原文。」</p>
+      <p style="margin-bottom:0">到这里，你已经有了：一个能用的库、一句问得准的话、一个会核对出处的习惯。剩下的，都是在这三样上慢慢加。</p>
+    </div>
+
+  </div>
+
+  <div class="reassure" style="margin-top:16px">
+    <b>不想拿自己的资料试？</b>打开 <a href="练习场.html">知识库练习场</a>，用 5 份样例资料走一遍。它离线运行，不联网，也不调用大模型，你可以放心乱问。
+  </div>
+</section>
+
+<!-- ================= 05 资料从哪来 ================= -->
+<section id="sources">
+  <div class="sec-head"><span class="sec-no">5</span><h2>资料从哪来：什么能放，怎么放最省事</h2></div>
+  <p class="sec-note">知识库不是凭空长出来的。它吃的是你已经在用的资料——不用新建一个「知识库文件夹」，只要把现有资料导进去。</p>
+
+  <h3>先看一张来源表</h3>
+  <div class="table-scroll">
+    <table class="cmp stackable">
+      <thead><tr><th>来源</th><th>典型东西</th><th>怎么进去</th><th>先处理什么</th></tr></thead>
+      <tbody>
+        <tr>
+          <td>自己电脑</td>
+          <td>PDF、Word、PPT、Excel、txt、md</td>
+          <td>上传、拖拽、选文件夹</td>
+          <td>扫描件先 OCR；超大文件按章节拆</td>
+        </tr>
+        <tr>
+          <td>公司系统</td>
+          <td>飞书、钉钉、企业微信、语雀、Notion、Confluence</td>
+          <td>产品自带的导入、连接器、授权</td>
+          <td>权限跟着账号走；先确认你有查看权限</td>
+        </tr>
+        <tr>
+          <td>聊天与会议</td>
+          <td>群聊记录、邮件、会议纪要、录音转写</td>
+          <td>导出成 txt / md 再传，或用连接器同步</td>
+          <td>删人名、手机号、客户底价；录音先转文字</td>
+        </tr>
+        <tr>
+          <td>网页与外部</td>
+          <td>收藏夹、公众号文章、行业报告、公开 PDF</td>
+          <td>剪藏、打印成 PDF、复制正文</td>
+          <td>只留正文；注意版权和时效</td>
+        </tr>
+        <tr>
+          <td>你自己的经验</td>
+          <td>SOP、FAQ、新人手册、复盘</td>
+          <td>先写成文档，再上传</td>
+          <td>这类最值钱，也最容易被忘</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="cap">练习场里只能导入 txt / md；真实产品通常还支持 PDF、Word、PPT 和连接器。</p>
+
+  <h3 style="margin-top:26px">哪些东西不适合直接放</h3>
+  <table class="trouble stackable">
+    <thead><tr><th>情况</th><th>为什么</th><th>怎么办</th></tr></thead>
+    <tbody>
+      <tr><td>扫描图片，没有文字层</td><td>它读到的是一张图，不是文字</td><td>先 OCR 成文字版，再传</td></tr>
+      <tr><td>加密 / 带密码的 PDF</td><td>解析会失败，或者只读到乱码</td><td>先解密，或另存成新文件</td></tr>
+      <tr><td>一个 300 页的合集</td><td>切片太粗，回答容易只答一半</td><td>按章节拆成 3–5 份</td></tr>
+      <tr><td>结构复杂的表格</td><td>合并单元格、跨页表格容易丢结构</td><td>导出 CSV，或附一段文字说明</td></tr>
+      <tr><td>含敏感信息的原件</td><td>客户名单、身份证、底价不该外传</td><td>删掉或脱敏，再传</td></tr>
+      <tr><td>天天变的数据</td><td>传完就过期，反而误导</td><td>放链接，或固定每周更新一次</td></tr>
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:26px">三种导入方式，按省事程度排</h3>
+  <div class="routes">
+    <div class="route recommended a">
+      <div class="route-top">
+        <span class="rbadge">A</span>
+        <h3>连接器 / 授权同步</h3>
+        <span class="tag ok">最省事</span>
+      </div>
+      <p class="who">适合：飞书、钉钉、Notion、语雀、腾讯文档、ima 这类已经在用的系统。</p>
+      <ul>
+        <li>一次授权，之后自动同步；不用下载再上传。</li>
+        <li>权限跟着账号走：你能看的，它才能读；你没权限的，它也读不到。</li>
+        <li>先看清授权范围，别把整个网盘都授权进去。</li>
+      </ul>
+    </div>
+
+    <div class="route b">
+      <div class="route-top">
+        <span class="rbadge">B</span>
+        <h3>上传文件 / 文件夹</h3>
+        <span class="tag neutral">最通用</span>
+      </div>
+      <p class="who">适合：本地 PDF、Word、PPT、Excel、txt、md。</p>
+      <ul>
+        <li>支持批量；很多产品可以整个文件夹拖进去。</li>
+        <li>看大小上限；扫描件先 OCR；一次别超过 5 份。</li>
+        <li>文件名改成能看懂的样子，三个月后你自己也认得出。</li>
+      </ul>
+    </div>
+
+    <div class="route c">
+      <div class="route-top">
+        <span class="rbadge">C</span>
+        <h3>复制粘贴正文</h3>
+        <span class="tag warn">最快，但会丢东西</span>
+      </div>
+      <p class="who">适合：网页、聊天记录、临时笔记。</p>
+      <ul>
+        <li>不用整理格式，粘贴进去就能问。</li>
+        <li>会丢格式和原始出处；长文容易截断。</li>
+        <li>不适合反复更新的资料——每次改都要重贴。</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 style="margin-top:26px">先放哪 5 份</h3>
+  <div class="gains">
+    <div class="gain">
+      <div class="gtitle">最常被问的</div>
+      <div class="row"><span class="after">制度、报价、流程、对外口径。别人一周问你三次的，就是它。</span></div>
+    </div>
+    <div class="gain">
+      <div class="gtitle">反复解释的</div>
+      <div class="row"><span class="after">新人问题、SOP、常见故障处理。你讲第 8 遍的时候，就该放进去了。</span></div>
+    </div>
+    <div class="gain">
+      <div class="gtitle">容易记错的</div>
+      <div class="row"><span class="after">数字、日期、条款号、折扣底线。人记不住的，正好交给它查。</span></div>
+    </div>
+    <div class="gain">
+      <div class="gtitle">有版本的</div>
+      <div class="row"><span class="after">只放最新版；旧版先删。留着旧版，它一定会答旧版。</span></div>
+    </div>
+  </div>
+
+  <div class="reassure" style="margin-top:16px">
+    <b>先 5 份，不要搬整个硬盘。</b>一个能答准的小库，比一个什么都有的杂货铺有用。资料也不用「整理好」再传——命名看得懂、内容能选中文字，就够了。
+  </div>
+
+  <h3 style="margin-top:26px">今天就能开始的三步</h3>
+  <ol class="steps">
+    <li><b>打开最近一周用过的文件夹。</b>不用全盘搜索，就从你昨天打开过的那几个开始。</li>
+    <li><b>挑 3 份最常被问的。</b>按上面 A / B / C 选一种方式导进去，先别超过 5 份。</li>
+    <li><b>问一个你已知答案的问题。</b>答对了，再继续加；答不对，先看第 7 节「答错了怎么改」。</li>
+  </ol>
+</section>
+
+<!-- ================= 06 怎么问 ================= -->
+<section id="ask">
+  <div class="sec-head"><span class="sec-no">6</span><h2>怎么和它配合：四句话，决定答案好坏</h2></div>
+  <p class="sec-note"><strong>知识库负责「知道」</strong>——找得到、找得准、给出处；<strong>模型负责「会说」</strong>——听懂你、组织语言、按格式输出。你写的这句话，是在给两者搭桥。</p>
+
+  <div class="pieces">
+    <div class="piece">
+      <div class="pn">第 1 句</div>
+      <h3>限定来源</h3>
+      <div class="quote">只根据我上传的资料回答。</div>
+      <p>不说这句，它会混用网上知识和你的资料，你就分不清哪句是公司规定、哪句是它编的。</p>
+    </div>
+    <div class="piece">
+      <div class="pn">第 2 句</div>
+      <h3>说清任务</h3>
+      <div class="quote">列出 / 对比 / 总结成表格 / 写成邮件。</div>
+      <p>别只说「看看这个」。它不知道你要它干嘛，就只能给你一段泛泛的复述。</p>
+    </div>
+    <div class="piece">
+      <div class="pn">第 3 句</div>
+      <h3>指定格式</h3>
+      <div class="quote">3 条以内 / 表格 / 200 字 / 先结论。</div>
+      <p>格式越具体，返工越少。尤其是「先结论」——能省掉你一半的阅读时间。</p>
+    </div>
+    <div class="piece">
+      <div class="pn">第 4 句</div>
+      <h3>要出处 + 兜底</h3>
+      <div class="quote">每条标文件名和页码；资料里没有就说没有。</div>
+      <p>这一句能挡掉大部分编造。它宁可说不知道，也不要给你一个像模像样的错答案。</p>
+    </div>
+  </div>
+
+  <div class="generator">
+    <h3 style="margin-bottom:4px">把你的问题，拼成一句好提问</h3>
+    <p class="cap" style="margin-bottom:14px">选任务、填主题，下面直接生成可以复制的话。</p>
+    <div class="gen-row">
+      <label for="pgTask">我要</label>
+      <select class="inp" id="pgTask">
+        <option value="rule">查一条规定</option>
+        <option value="weekly">写周报</option>
+        <option value="compare">对比两个方案</option>
+        <option value="mail">给客户写邮件</option>
+        <option value="newbie">回答新人的问题</option>
+      </select>
+      <label for="pgTopic" class="sr-only">主题</label>
+      <input class="inp grow" id="pgTopic" placeholder="比如：出差打车报销时限">
+      <button class="btn small primary" type="button" id="pgMake">生成</button>
+    </div>
+    <pre class="code" id="pgOut">选好任务、填上主题，点「生成」。</pre>
+    <div class="row-actions">
+      <button class="btn small" type="button" data-copy="pgOut">复制这句话</button>
+    </div>
+  </div>
+
+  <h3 style="margin-top:24px">同一件事，换个问法差别有多大</h3>
+  <table class="badgood stackable">
+    <thead><tr><th>别这样问</th><th>换成这样</th></tr></thead>
+    <tbody>
+      <tr>
+        <td class="b">报销怎么弄？</td>
+        <td class="g">只根据《差旅报销管理办法》，出差打车费最晚多久内提交？给我条款号和原文。</td>
+      </tr>
+      <tr>
+        <td class="b">帮我写周报。</td>
+        <td class="g">只根据我上传的 5 份会议纪要，列出本周与我有关的待办，按「已完成 / 进行中 / 待确认」分三组，每条标出来自哪份纪要。</td>
+      </tr>
+      <tr>
+        <td class="b">这个客户什么情况？</td>
+        <td class="g">只根据客户档案，汇总 A 客户过去半年的三次报价，列成表格：日期、金额、折扣、附加条件，并标出出处。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p class="cap" style="margin-top:14px">拿到答案后，追问三句，基本就能确认它靠不靠谱：</p>
+  <div class="followups">
+    <span class="fu">「这个结论出自哪一段？把原文贴出来。」</span>
+    <span class="fu">「资料里还有别的说法吗？有冲突的列出来。」</span>
+    <span class="fu">「如果资料里没有，直接说没有，不要推测。」</span>
+  </div>
+  <p class="cap" style="margin-top:12px">另外：一个对话只做一件事。任务换了就新开一个，不然它会把上一个任务的上下文带进来。</p>
+</section>
+
+<!-- ================= 07 怎么查 ================= -->
+<section id="query">
+  <div class="sec-head"><span class="sec-no">7</span><h2>怎么灵活查：五种问法，覆盖大部分工作</h2></div>
+  <p class="sec-note">不知道该怎么开口时，从下面挑一个，把 <em style="font-style:normal;color:#0f5f57;font-weight:700">{ }</em> 里的内容换成你自己的。</p>
+
+  <div class="asks">
+    <div class="ask">
+      <div class="atype">问法 1</div>
+      <h3>定位型</h3>
+      <div class="when">我只记得「有」，不记得「在哪」。</div>
+      <div class="sentence">关于 <em>{X}</em> 的内容，在哪几份文件里？分别说了什么？标出文件名和页码。</div>
+      <button class="btn small" type="button" data-copy="ask1">复制</button>
+      <span id="ask1" hidden>关于 {X} 的内容，在哪几份文件里？分别说了什么？标出文件名和页码。</span>
+    </div>
+    <div class="ask">
+      <div class="atype">问法 2</div>
+      <h3>汇总型</h3>
+      <div class="when">信息散在十几份材料里，懒得一份份看。</div>
+      <div class="sentence">把这 6 份纪要里跟 <em>{X}</em> 有关的内容合成一页，按时间排序，每条标出处。</div>
+      <button class="btn small" type="button" data-copy="ask2">复制</button>
+      <span id="ask2" hidden>把这 6 份纪要里跟 {X} 有关的内容合成一页，按时间排序，每条标出处。</span>
+    </div>
+    <div class="ask">
+      <div class="atype">问法 3</div>
+      <h3>对比型</h3>
+      <div class="when">两个方案、两个版本，拿不准差在哪。</div>
+      <div class="sentence">A 和 B 在 <em>{X}</em> 上有什么不同？列成表格，逐项标出处；资料没提到的写「未提及」。</div>
+      <button class="btn small" type="button" data-copy="ask3">复制</button>
+      <span id="ask3" hidden>A 和 B 在 {X} 上有什么不同？列成表格，逐项标出处；资料没提到的写「未提及」。</span>
+    </div>
+    <div class="ask">
+      <div class="atype">问法 4</div>
+      <h3>生成型</h3>
+      <div class="when">要在已有材料上写东西，不想从零憋。</div>
+      <div class="sentence">按《周报模板》的结构，把 <em>{X}</em> 写成周报；只用库里的事实，不要补数字。</div>
+      <button class="btn small" type="button" data-copy="ask4">复制</button>
+      <span id="ask4" hidden>按《周报模板》的结构，把 {X} 写成周报；只用库里的事实，不要补数字。</span>
+    </div>
+    <div class="ask">
+      <div class="atype">问法 5</div>
+      <h3>审查型</h3>
+      <div class="when">怕写错、怕和公司口径冲突。</div>
+      <div class="sentence">这份草稿和《对外口径》有哪些冲突？逐条列出原文和冲突点，再给修改建议。</div>
+      <button class="btn small" type="button" data-copy="ask5">复制</button>
+      <span id="ask5" hidden>这份草稿和《对外口径》有哪些冲突？逐条列出原文和冲突点，再给修改建议。</span>
+    </div>
+    <div class="ask" style="background:#f7fbfa;border-style:dashed">
+      <div class="atype">万能补丁</div>
+      <h3>答案不对时，先加这一句</h3>
+      <div class="when">不管是哪种问法，都能接在后面。</div>
+      <div class="sentence">先告诉我你检索到了哪几段，再回答；找不到就直说找不到。</div>
+      <button class="btn small" type="button" data-copy="ask6">复制</button>
+      <span id="ask6" hidden>先告诉我你检索到了哪几段，再回答；找不到就直说找不到。</span>
+    </div>
+  </div>
+
+  <h3 style="margin-top:26px">答错了怎么改</h3>
+  <table class="trouble stackable">
+    <thead><tr><th>现象</th><th>多半是</th><th>改法</th></tr></thead>
+    <tbody>
+      <tr><td>答非所问</td><td>问题太笼统，或资料里真没有</td><td>加范围词、加文件名，再问一次</td></tr>
+      <tr><td>它说「找不到」</td><td>没传、没解析成功，或你用的词和原文不一样</td><td>先看「检索到了什么」，换一个同义词再问</td></tr>
+      <tr><td>引用对不上</td><td>切片跨页，或模型张冠李戴</td><td>要求「逐条贴原文」，点开核对</td></tr>
+      <tr><td>回答太笼统</td><td>你没给格式</td><td>要求「3 条以内、每条一句、带数字」</td></tr>
+      <tr><td>越问越乱</td><td>一个对话塞了太多任务</td><td>新任务开新对话</td></tr>
+      <tr><td>数字、日期可疑</td><td>这是编造的高发区</td><td>必须点出处，或让它直接引用原句</td></tr>
+    </tbody>
+  </table>
+  <p class="cap" style="margin-top:12px">答错了先别换模型。九成问题出在两件事：它没找到，或者你没说清。</p>
+  <p class="cap" style="margin-top:10px">想亲眼看「严格 / 标准 / 宽松」的差别？打开 <a href="练习场.html" style="color:var(--teal);font-weight:700">练习场</a>，点「三档对比」，同一个问题三档并排。</p>
+</section>
+
+<!-- ================= 08 维护 ================= -->
+<section id="keep">
+  <div class="sec-head"><span class="sec-no">8</span><h2>长期怎么养：每周 10 分钟</h2></div>
+  <p class="sec-note">知识库不是靠分类变好用的，是靠「里面有你真正会问的东西」。</p>
+
+  <div class="keep3">
+    <div class="keepcard">
+      <div class="kn">每周 · 1</div>
+      <h3>加 1 份</h3>
+      <p>这周被问到的、或者你翻了很久才找到的那份资料，传进去。</p>
+    </div>
+    <div class="keepcard">
+      <div class="kn">每周 · 2</div>
+      <h3>删 1 份</h3>
+      <p>过期的、被新版替代的、传错的。留着旧版，它就一定会答旧版。</p>
+    </div>
+    <div class="keepcard">
+      <div class="kn">每周 · 3</div>
+      <h3>记 1 条</h3>
+      <p>记下「这次哪个问法问对了」，下次直接照抄。例：问制度时加「给我条款号和原文」，命中率高很多。</p>
+    </div>
+  </div>
+
+  <div class="reassure">
+    <b>不整理也可以。</b>你的文件夹不用改名，不用分类，不用打标签。库里的东西乱一点没关系，只要你能问出来、并且答得对。
+  </div>
+
+  <details class="fold">
+    <summary>兜底：它说「资料里没有」，但你知道文件在</summary>
+    <div class="fold-body">
+      <p style="margin-bottom:8px">先自己把文件找出来，再决定要不要补传。三层搜索法，每层最多 1 分钟：</p>
+      <ol>
+        <li><strong>按文件名 / 路径搜</strong>：在文件资源管理器右上角敲 2–4 个字。想不起文件名就敲文件夹名，或者「截图」「下载」。</li>
+        <li><strong>按时间缩小</strong>：在结果里按「修改日期」排序，只记「大概那阵子」就够。</li>
+        <li><strong>在原文件里搜一个词</strong>：打开候选文件按 Ctrl+F，只搜一个词。截图里没有文字，就回到第 1 层按截图日期找。</li>
+      </ol>
+    </div>
+  </details>
+
+  <details class="fold">
+    <summary>什么值得传：三问过滤</summary>
+    <div class="fold-body">
+      <p style="margin-bottom:8px">遇到一份资料，过一遍这三个问题，有一个答「是」就传：</p>
+      <ol>
+        <li>三个月内，我用过它吗？</li>
+        <li>未来三个月，我可能用它吗？</li>
+        <li>如果现在删掉，我会后悔吗？</li>
+      </ol>
+      <p style="margin:8px 0 0">三个都「否」，就放心划走。判断错了也不占地方——知识库不像文件夹，多一份不会更乱，只会让检索变慢一点点。</p>
+    </div>
+  </details>
+</section>
+
+<!-- ================= 09 速查卡 ================= -->
+<section id="cheatsheet">
+  <div class="sec-head"><span class="sec-no">9</span><h2>一页速查卡</h2></div>
+  <p class="sec-note no-print">可以打印出来贴在工位上。点下面的按钮，只会打印这一块。</p>
+
+  <table class="cheat-table">
+    <caption class="sr-only">知识库一页速查</caption>
+    <tr>
+      <th scope="row">传什么</th>
+      <td>你真的会问的东西</td>
+      <td>先放 5 份。选最常被问到的，不是最全的。扫描件先 OCR，敏感内容先删。</td>
+    </tr>
+    <tr>
+      <th scope="row">怎么问</th>
+      <td>四句话</td>
+      <td>只根据我上传的资料 → 说清任务 → 指定格式 → 每条标出处，没有就说没有。</td>
+    </tr>
+    <tr>
+      <th scope="row">怎么信</th>
+      <td>点开出处</td>
+      <td>尤其是数字、日期、条款号。三个出处里出现一个编的，并不罕见，不是意外。</td>
+    </tr>
+    <tr>
+      <th scope="row">怎么修</th>
+      <td>先看检索</td>
+      <td>答错时先问「你检索到了哪几段」。九成问题是没找到，不是不会说。</td>
+    </tr>
+    <tr>
+      <th scope="row">怎么养</th>
+      <td>每周 10 分钟</td>
+      <td>加 1 份、删 1 份、记 1 条「这次怎么问对的」。不整理也可以。</td>
+    </tr>
+  </table>
+
+  <div class="formula">
+    <b>提问公式：</b>只根据【哪份资料】＋ 帮我【做什么】＋ 按【什么格式】＋ 每条标【出处】，没有就说没有。
+  </div>
+
+  <div class="row-actions no-print" style="margin-top:16px">
+    <button class="btn primary" type="button" id="printBtn">打印这张卡</button>
+    <button class="btn" type="button" data-copy="cheatText">复制成文字</button>
+    <span id="cheatText" hidden>【知识库一页速查】
+1. 传什么：你真的会问的东西。先放 5 份，选最常被问到的，不是最全的。
+2. 怎么问：只根据我上传的资料 + 说清任务 + 指定格式 + 每条标出处，没有就说没有。
+3. 怎么信：点开出处，尤其是数字、日期、条款号。
+4. 怎么修：答错先问「你检索到了哪几段」，九成是没找到。
+5. 怎么养：每周 10 分钟，加 1 份、删 1 份、记 1 条。不整理也可以。
+提问公式：只根据【哪份资料】+ 帮我【做什么】+ 按【什么格式】+ 每条标【出处】，没有就说没有。</span>
+  </div>
+</section>
+
+<!-- ================= 附一 黑话表 ================= -->
+<section id="glossary">
+  <div class="sec-head"><span class="sec-no appendix">附1</span><h2>黑话翻译表</h2></div>
+  <p class="sec-note">产品介绍、同事聊天、客服回复里会蹦出这些词。不用背，遇到回来查一眼就行。左边是你听到的，中间是人话。</p>
+
+  <table class="gloss stackable">
+    <thead><tr><th>你会听到</th><th>人话</th><th>在哪会碰到</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>知识库</td>
+        <td>一堆你的资料 + 一个会查资料的助手。它不是某个软件的名字，是一种用法。</td>
+        <td>全程</td>
+      </tr>
+      <tr>
+        <td>大模型 / LLM</td>
+        <td>负责「会说」的那部分：听懂你的问题、把找到的资料组织成人话。它本身不记得你的资料。</td>
+        <td>每个产品背后</td>
+      </tr>
+      <tr>
+        <td>上传 / 接入</td>
+        <td>把你的资料交给它读一遍。不是搬走，原文件还在原地。</td>
+        <td>第 3 节</td>
+      </tr>
+      <tr>
+        <td>解析</td>
+        <td>它把你的 PDF、Word 拆成能读的文字。「解析失败」= 它没读到内容，不是文件坏了。</td>
+        <td>上传后的状态栏</td>
+      </tr>
+      <tr>
+        <td>索引</td>
+        <td>给资料做的一张「目录卡」，记下每一段在第几页，方便它快速找到。</td>
+        <td>第 1 节的三层图</td>
+      </tr>
+      <tr>
+        <td>切片 / 分块（chunk）</td>
+        <td>把长文档切成小段。切得不好，一条规定会被切成两半，它就只能答一半。</td>
+        <td>答案缺半句时</td>
+      </tr>
+      <tr>
+        <td>向量 / 嵌入（embedding）</td>
+        <td>把一段话变成一串数字，让电脑能判断「这两句话的意思像不像」。</td>
+        <td>不用管，知道有这回事就行</td>
+      </tr>
+      <tr>
+        <td>召回 / 检索（retrieval）</td>
+        <td>回答之前，先从资料里找出最相关的几段。这一步找错了，后面全错。</td>
+        <td>「它检索到了什么」</td>
+      </tr>
+      <tr>
+        <td>上下文（context）</td>
+        <td>它这一次回答时「眼前能看到」的东西：你传的资料、前面的对话、你刚问的那句。</td>
+        <td>对话变长、开始答串时</td>
+      </tr>
+      <tr>
+        <td>提示词（prompt）</td>
+        <td>你输入的那段话。同一件事，换个说法，结果差很多。</td>
+        <td>第 6 节</td>
+      </tr>
+      <tr>
+        <td>幻觉</td>
+        <td>它编了一个看起来很真的答案，还配了一个假出处。不是它坏，是它太会「接话」。</td>
+        <td>开头、第 7 节</td>
+      </tr>
+      <tr>
+        <td>引用 / 出处（citation）</td>
+        <td>答案后面那个小数字，点开能看到原文。用来判断这句话该不该信。</td>
+        <td>每次核对时</td>
+      </tr>
+      <tr>
+        <td>RAG</td>
+        <td>「先查资料，再回答」的英文缩写。市面上的知识库产品，大多是这个路子。</td>
+        <td>看产品介绍时</td>
+      </tr>
+      <tr>
+        <td>OCR</td>
+        <td>把扫描图片里的字认出来。扫描件不做 OCR，传上去等于传了一张图。</td>
+        <td>第 4 节第 1 步</td>
+      </tr>
+      <tr>
+        <td>私有化部署</td>
+        <td>把整套系统装在公司自己的机器上，数据不出内网。需要机器、运维和模型 Key。</td>
+        <td>第 3 节路线 C</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="gloss-line">
+    <b>把这些词串起来，就是一句话：</b>你上传资料 → 它解析、切片、建索引 → 你提问 → 它召回几段 → 大模型组织成人话 → 标出处。这一整条路，就叫 <b>RAG</b>。
+  </div>
+
+  <p class="cap" style="margin-top:14px">这张表只解释基础版会用到的词。切片参数、向量库选型、重排、评估这些，留给进阶版。</p>
+</section>
+
+<!-- ================= 附二 参考 ================= -->
+<section id="refs">
+  <div class="sec-head"><span class="sec-no appendix">附2</span><h2>这份指南参考了哪些开源项目</h2></div>
+  <p class="sec-note">只借鉴做法和讲法，没有复制任何代码。想深入的人可以顺着链接去看。</p>
+  <div class="refs">
+    <div class="ref">
+      <a href="https://github.com/infiniflow/ragflow" target="_blank" rel="noopener">RAGFlow</a>
+      <span>「10 分钟教程」的五步骨架、引用核对、先看检索结果再看答案</span>
+    </div>
+    <div class="ref">
+      <a href="https://github.com/MisterBooo/rag-from-zero" target="_blank" rel="noopener">rag-from-zero</a>
+      <span>先给失败现场；「没依据就拒答、每个结论标出处」</span>
+    </div>
+    <div class="ref">
+      <a href="https://github.com/nashsu/llm_wiki" target="_blank" rel="noopener">LLM Wiki</a>
+      <span>原始资料只读、上层可重建的三层结构</span>
+    </div>
+    <div class="ref">
+      <a href="https://github.com/Tencent/WeKnora" target="_blank" rel="noopener">WeKnora</a>
+      <span>答案可跳回原文段落；切片可编辑、可回滚</span>
+    </div>
+    <div class="ref">
+      <a href="https://github.com/1Panel-dev/MaxKB" target="_blank" rel="noopener">MaxKB</a>
+      <span>用一句话讲清「切分 + 向量化 → 减少幻觉」</span>
+    </div>
+    <div class="ref">
+      <a href="https://github.com/codexu/note-gen" target="_blank" rel="noopener">NoteGen</a>
+      <span>「先收集，后整理」的维护姿态</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  本文核对于 2026 年 11 月。产品入口会变，方法不会。<br>
+  不移动、不重命名、不删除你的任何现有文件。
+</footer>
+
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  function $(id){ return document.getElementById(id); }
+
+  var toastTimer = null;
+  function toast(msg){
+    var t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ t.classList.remove("show"); }, 1900);
+  }
+
+  function copyText(text){
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(text).then(
+        function(){ toast("已复制"); },
+        function(){ fallbackCopy(text); }
+      );
+    }else{
+      fallbackCopy(text);
+    }
+  }
+  function fallbackCopy(text){
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "fixed";
+    ta.style.top = "-1000px";
+    document.body.appendChild(ta);
+    ta.select();
+    var ok = false;
+    try{ ok = document.execCommand("copy"); }catch(e){ ok = false; }
+    document.body.removeChild(ta);
+    toast(ok ? "已复制" : "复制没成功，请手动选中文字复制");
+  }
+
+  /* ---------- 窄屏表格：把表头变成每张卡的字段名 ---------- */
+  Array.prototype.forEach.call(document.querySelectorAll("table.stackable"), function(tbl){
+    var heads = Array.prototype.map.call(tbl.querySelectorAll("thead th"), function(th){
+      return th.textContent.trim();
+    });
+    if(!heads.length) return;
+    Array.prototype.forEach.call(tbl.querySelectorAll("tbody tr"), function(tr){
+      Array.prototype.forEach.call(tr.children, function(cell, i){
+        if(heads[i]) cell.setAttribute("data-label", heads[i]);
+      });
+    });
+  });
+
+  /* ---------- 通用复制按钮 ---------- */
+  document.querySelectorAll("[data-copy]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var el = $(btn.getAttribute("data-copy"));
+      if(el) copyText(el.textContent.trim());
+    });
+  });
+
+  /* ---------- 演示 1：出处核对 ---------- */
+  var CITE = {
+    c1: {
+      label:"《差旅报销管理办法 v3》第 2.3 条",
+      real:true,
+      text:"「出差结束后 15 个工作日内提交报销；跨月费用须在次月 5 日前补交。」"
+    },
+    c2: {
+      label:"财务部通知（2026-03-12）",
+      real:true,
+      text:"「自 2026 年 4 月 1 日起，网约车发票需附行程单，否则退回。」"
+    },
+    c3: {
+      label:"《员工手册 2024 版》第 5 章",
+      real:false,
+      text:"这一版员工手册里没有关于报销时限的段落。它只是把出处写得像真的——文件名、章节号、格式，全都可以编。"
+    }
+  };
+  var seen = {};
+  var citeOut = $("citeOut");
+  var citeCount = $("citeCount");
+  var citeVerdict = $("citeVerdict");
+  var citeChips = Array.prototype.slice.call(document.querySelectorAll(".cite"));
+
+  function renderCite(key, chip){
+    var d = CITE[key];
+    var badge = d.real
+      ? '<span class="tag ok">原文里有</span>'
+      : '<span class="tag bad">原文里没有</span>';
+    citeOut.className = "cite-out " + (d.real ? "is-real" : "is-fake");
+    citeOut.innerHTML =
+      '<div class="cite-head"><span class="tag neutral">出处 ' + key.replace("c","") + '</span>' +
+      '<strong>' + d.label + '</strong>' + badge + '</div>' +
+      '<p class="cite-text">' + d.text + '</p>';
+    citeOut.hidden = false;
+
+    seen[key] = true;
+    chip.classList.add("seen");
+    var n = Object.keys(seen).length;
+    citeCount.textContent = "已点开 " + n + " / 3";
+
+    if(n === 3){
+      citeVerdict.classList.add("show");
+      citeChips.forEach(function(c){
+        if(c.getAttribute("data-cite") === "c3") c.classList.add("fake");
+      });
+      citeCount.textContent = "3 / 3 · 抓到 1 个编的";
+    }
+  }
+
+  citeChips.forEach(function(chip){
+    chip.addEventListener("click", function(){
+      renderCite(chip.getAttribute("data-cite"), chip);
+    });
+  });
+
+  $("citeReset").addEventListener("click", function(){
+    seen = {};
+    citeOut.hidden = true;
+    citeOut.innerHTML = "";
+    citeVerdict.classList.remove("show");
+    citeCount.textContent = "已点开 0 / 3";
+    citeChips.forEach(function(c){ c.classList.remove("seen","fake"); });
+  });
+
+  /* ---------- 演示 2：检索结果开关 ---------- */
+  var retToggle = $("retToggle");
+  var retPanel = $("retPanel");
+  retToggle.addEventListener("click", function(){
+    var open = retPanel.hidden;
+    retPanel.hidden = !open;
+    retToggle.setAttribute("aria-expanded", String(open));
+    retToggle.textContent = open ? "收起检索结果" : "它回答之前，检索到了什么？";
+  });
+
+  /* ---------- 演示 3：自检清单 ---------- */
+  var chks = Array.prototype.slice.call(document.querySelectorAll("[data-chk]"));
+  var scoreFill = $("scoreFill");
+  var chkVerdict = $("chkVerdict");
+
+  function updateCheck(){
+    var n = chks.filter(function(c){ return c.checked; }).length;
+    var pct = Math.round(n / chks.length * 100);
+    scoreFill.style.width = pct + "%";
+
+    chkVerdict.className = "check-verdict";
+    if(n === chks.length){
+      chkVerdict.textContent = "全部通过，可以传了。先放这 5 份，问一个你已知答案的问题验证一下。";
+    }else if(n >= 4){
+      chkVerdict.textContent = "可以传，但有 " + (chks.length - n) + " 项没确认。先把没勾的处理掉，尤其是敏感内容那条。";
+      chkVerdict.classList.add("warn");
+    }else if(n > 0){
+      chkVerdict.textContent = "先别急着传。还有 " + (chks.length - n) + " 项没确认，传错了后面问什么都是错的。";
+      chkVerdict.classList.add("bad");
+    }else{
+      chkVerdict.textContent = "勾选上面的项目，这里会给结论。";
+    }
+  }
+  chks.forEach(function(c){ c.addEventListener("change", updateCheck); });
+  updateCheck();
+
+  /* ---------- 演示 4：提问生成器 ---------- */
+  var TASKS = {
+    rule: {
+      ph:"比如：出差打车报销时限",
+      build:function(t){
+        return "只根据我上传的资料，回答：" + t + "。\n" +
+          "要求：\n" +
+          "1. 先给结论，再给依据；\n" +
+          "2. 每条结论后面标出文件名和条款号 / 页码；\n" +
+          "3. 资料里没有就直说「资料里没有」，不要猜。";
+      }
+    },
+    weekly: {
+      ph:"比如：本周市场部进展",
+      build:function(t){
+        return "只根据我上传的会议纪要，帮我写本周周报，主题是：" + t + "。\n" +
+          "要求：\n" +
+          "1. 按「已完成 / 进行中 / 待确认」分三组；\n" +
+          "2. 每条标出来自哪份纪要；\n" +
+          "3. 不要编造没有记录的数字和日期。";
+      }
+    },
+    compare: {
+      ph:"比如：A 方案和 B 方案的成本",
+      build:function(t){
+        return "只根据我上传的资料，对比：" + t + "。\n" +
+          "要求：\n" +
+          "1. 列成表格，维度包括成本、周期、风险；\n" +
+          "2. 每个判断都标出处；\n" +
+          "3. 资料里没提到的格子写「资料未提及」，不要补。";
+      }
+    },
+    mail: {
+      ph:"比如：项目延期一周的说明",
+      build:function(t){
+        return "只根据我上传的资料，给客户写一封关于「" + t + "」的邮件。\n" +
+          "要求：\n" +
+          "1. 300 字以内，先结论后原因；\n" +
+          "2. 语气克制，不承诺资料里没有的事；\n" +
+          "3. 不确定的信息用【待确认】标出，不要自己补。";
+      }
+    },
+    newbie: {
+      ph:"比如：报销流程怎么走",
+      build:function(t){
+        return "只根据我上传的资料，回答新人的问题：" + t + "。\n" +
+          "要求：\n" +
+          "1. 先用一句大白话给答案；\n" +
+          "2. 再给 2–3 步具体操作；\n" +
+          "3. 最后标出处；资料里没有就说「这个库里没有，建议问 X」。";
+      }
+    }
+  };
+
+  var pgTask = $("pgTask");
+  var pgTopic = $("pgTopic");
+  var pgOut = $("pgOut");
+
+  function syncPlaceholder(){
+    pgTopic.placeholder = TASKS[pgTask.value].ph;
+  }
+  pgTask.addEventListener("change", function(){
+    syncPlaceholder();
+    pgOut.textContent = "选好任务、填上主题，点「生成」。";
+  });
+  syncPlaceholder();
+
+  $("pgMake").addEventListener("click", function(){
+    var topic = pgTopic.value.trim() || "（把主题填上）";
+    pgOut.textContent = TASKS[pgTask.value].build(topic);
+    toast("生成好了，可以复制");
+  });
+
+  /* ---------- 打印 ---------- */
+  $("printBtn").addEventListener("click", function(){
+    window.print();
+  });
+
+  /* ---------- 目录高亮：滚到哪一节，目录就亮哪一项 ---------- */
+  var navLinks = Array.prototype.slice.call(document.querySelectorAll(".site-nav a"));
+  var navMap = Object.create(null);
+  navLinks.forEach(function(a){
+    var id = a.getAttribute("href").slice(1);
+    var sec = document.getElementById(id);
+    if(sec) navMap[id] = a;
+  });
+  var navIds = Object.keys(navMap);
+  function updateNavActive(){
+    var y = window.scrollY + 130;
+    var current = null;
+    navIds.forEach(function(id){
+      var sec = document.getElementById(id);
+      if(sec && sec.getBoundingClientRect().top + window.scrollY <= y) current = id;
+    });
+    navLinks.forEach(function(a){ a.classList.remove("active"); });
+    if(current) navMap[current].classList.add("active");
+    else if(navLinks.length) navLinks[0].classList.add("active");
+  }
+  window.addEventListener("scroll", updateNavActive, { passive: true });
+  updateNavActive();
+
+})();
+</script>
+</body>
+</html>
